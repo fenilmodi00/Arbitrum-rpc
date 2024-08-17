@@ -1,0 +1,59 @@
+---
+version: "2.0"
+services:
+  arbitrum-nitro-node:
+    image: offchainlabs/nitro-node:v2.0.10-73224e3
+    environment:
+      - PARENT_CHAIN_URL=https://l1-node:8545 # Replace with your Layer 1 Ethereum RPC URL
+      - CHAIN_ID=<L2ChainId> # Replace with your L2 Chain ID or name
+      - HTTP_API=net,web3,eth
+      - HTTP_CORS_DOMAIN=*
+      - HTTP_ADDR=0.0.0.0
+      - HTTP_VHOSTS=*
+      - WS_PORT=8548
+      - WS_ADDR=0.0.0.0
+      - WS_ORIGINS=*
+      - INIT_URL="" # Optional: URL for the database snapshot, if needed
+      - INIT_PRUNE=full # Optional: Enable pruning if needed
+    ports:
+      - port: 8547 # HTTP RPC port
+        to:
+          - global: true
+      - port: 8548 # WebSocket port
+        to:
+          - global: true
+    volumes:
+      - mount: /path/to/local/data:/home/user/.arbitrum # Local directory for persistent data
+    command:
+      - --parent-chain.connection.url=${PARENT_CHAIN_URL}
+      - --chain.id=${CHAIN_ID}
+      - --http.api=${HTTP_API}
+      - --http.corsdomain=${HTTP_CORS_DOMAIN}
+      - --http.addr=${HTTP_ADDR}
+      - --http.vhosts=${HTTP_VHOSTS}
+      - --ws.port=${WS_PORT}
+      - --ws.addr=${WS_ADDR}
+      - --ws.origins=${WS_ORIGINS}
+      - --init.url=${INIT_URL}
+      - --init.prune=${INIT_PRUNE}
+profiles:
+  compute:
+    arbitrum-node:
+      resources:
+        cpu:
+          units: 8
+        memory:
+          size: 32Gi
+        storage:
+          - size: 1Ti
+  placement:
+    akash:
+      pricing:
+        arbitrum-node:
+          denom: uakt
+          amount: 20000
+deployment:
+  arbitrum-node:
+    akash:
+      profile: arbitrum-node
+      count: 1
