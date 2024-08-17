@@ -1,7 +1,3 @@
-Here is a comprehensive README file for deploying an Arbitrum Nitro RPC node using Akash, including setup instructions, environment variables, and deployment details.
-
----
-
 # Arbitrum Nitro RPC Node Deployment on Akash
 
 ## Overview
