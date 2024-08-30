@@ -1,59 +1,39 @@
 ---
 version: "2.0"
 services:
-  arbitrum-nitro-node:
-    image: offchainlabs/nitro-node:v2.0.10-73224e3
-    environment:
-      - PARENT_CHAIN_URL=https://l1-node:8545 # Replace with your Layer 1 Ethereum RPC URL
-      - CHAIN_ID=<L2ChainId> # Replace with your L2 Chain ID or name
-      - HTTP_API=net,web3,eth
-      - HTTP_CORS_DOMAIN=*
-      - HTTP_ADDR=0.0.0.0
-      - HTTP_VHOSTS=*
-      - WS_PORT=8548
-      - WS_ADDR=0.0.0.0
-      - WS_ORIGINS=*
-      - INIT_URL="" # Optional: URL for the database snapshot, if needed
-      - INIT_PRUNE=full # Optional: Enable pruning if needed
-    ports:
-      - port: 8547 # HTTP RPC port
+  ethereum:
+    image: ethereum/client-go:latest
+    expose:
+      - port: 30303
+        as: 30303
         to:
           - global: true
-      - port: 8548 # WebSocket port
+      - port: 8545
+        as: 8545
         to:
           - global: true
-    volumes:
-      - mount: /path/to/local/data:/home/user/.arbitrum # Local directory for persistent data
-    command:
-      - --parent-chain.connection.url=${PARENT_CHAIN_URL}
-      - --chain.id=${CHAIN_ID}
-      - --http.api=${HTTP_API}
-      - --http.corsdomain=${HTTP_CORS_DOMAIN}
-      - --http.addr=${HTTP_ADDR}
-      - --http.vhosts=${HTTP_VHOSTS}
-      - --ws.port=${WS_PORT}
-      - --ws.addr=${WS_ADDR}
-      - --ws.origins=${WS_ORIGINS}
-      - --init.url=${INIT_URL}
-      - --init.prune=${INIT_PRUNE}
+    args:
+      - "--http"
+      - "--http.addr=0.0.0.0"
+      - "--http.vhosts=*"
 profiles:
   compute:
-    arbitrum-node:
+    ethereum:
       resources:
         cpu:
-          units: 8
+          units: 4
         memory:
-          size: 32Gi
+          size: 16GB
         storage:
-          - size: 1Ti
+          - size: 700Gi
   placement:
-    akash:
+    dcloud:
       pricing:
-        arbitrum-node:
+        ethereum:
           denom: uakt
-          amount: 20000
+          amount: 1000
 deployment:
-  arbitrum-node:
-    akash:
-      profile: arbitrum-node
+  ethereum:
+    dcloud:
+      profile: ethereum
       count: 1
