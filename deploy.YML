@@ -1,39 +1,34 @@
 ---
 version: "2.0"
 services:
-  ethereum:
-    image: ethereum/client-go:latest
+  tezos:
+    image: tezos/tezos:latest
     expose:
-      - port: 30303
-        as: 30303
-        to:
-          - global: true
-      - port: 8545
-        as: 8545
+      - port: 8732
+        as: 8732
         to:
           - global: true
     args:
-      - "--http"
-      - "--http.addr=0.0.0.0"
-      - "--http.vhosts=*"
+      - octez-node
+      - "--network=ghostnet"
 profiles:
   compute:
-    ethereum:
+    tezos:
       resources:
         cpu:
-          units: 4
+          units: 6
         memory:
-          size: 16GB
+          size: 16Gi
         storage:
-          - size: 700Gi
+          - size: 176Gi
   placement:
     dcloud:
       pricing:
-        ethereum:
+        tezos:
           denom: uakt
-          amount: 1000
+          amount: 10000
 deployment:
-  ethereum:
+  tezos:
     dcloud:
-      profile: ethereum
+      profile: tezos
       count: 1
