@@ -10,7 +10,7 @@ services:
           - global: true
     args:
       - octez-node
-      - "--network=ghostnet"
+      - "--network=sandbox"
 profiles:
   compute:
     tezos:
